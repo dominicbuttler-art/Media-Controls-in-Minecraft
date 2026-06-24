@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "media-controls-in-minecraft",
+	"version": "${version}",
+	"name": "Media Controls in Minecraft",
+	"description": "Adds media control buttons to the pause screen for you to easily be able to control your media from within Minecraft",
+	"authors": [
+		"CoolGamer999540"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/project/media-controls-in-minecraft",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/media-controls-in-minecraft/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			"com.mediacontrolsinminecraft.MediaControlsInMinecraft"
+		],
+		"client": [
+			"com.mediacontrolsinminecraft.client.MediaControlsInMinecraftClient"
+		],
+		"modmenu": [
+			"com.mediacontrolsinminecraft.client.config.ModMenuImplementation"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": ">=1.21.11",
+		"java": ">=21",
+		"fabric-api": "*",
+		"cloth-config": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
+	}
+}
