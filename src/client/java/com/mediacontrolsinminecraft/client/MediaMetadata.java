@@ -3,8 +3,10 @@ package com.mediacontrolsinminecraft.client;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class MediaMetadata {
 
@@ -13,7 +15,7 @@ public abstract class MediaMetadata {
 
     public static boolean powershellRunning = false;
 
-    public static final String noMediaBeingPlayedMessage = "STATUS: No media being played";
+    public static final String noMediaBeingPlayedMessageWindows = "STATUS: No media being played";
     private static final String windowsCommand =
                     "$null = [Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager, Windows.Media.Control, ContentType=WindowsRuntime];" +
                     "$null = [Windows.Media.Control.GlobalSystemMediaTransportControlsSessionMediaProperties, Windows.Media.Control, ContentType=WindowsRuntime];" +
@@ -53,7 +55,7 @@ public abstract class MediaMetadata {
                     "            }" +
                     "        } else {" +
                     "            if ($lastMedia -ne 'No active media') {" +
-                    "                Write-Output '" + noMediaBeingPlayedMessage + "';" +
+                    "                Write-Output '" + noMediaBeingPlayedMessageWindows + "';" +
                     "                $lastMedia = 'No active media';" +
                     "                [System.Console]::Out.Flush();" +
                     "            }" +
@@ -74,7 +76,7 @@ public abstract class MediaMetadata {
     private static ProcessBuilder powershellProcessBuilder;
     private static Process powershellProcess;
 
-    public static void startMediaMonitoring() {
+    public static void startMediaMonitoringForWindows() {
 
         if (!powershellRunning) {
 
@@ -121,8 +123,6 @@ public abstract class MediaMetadata {
                     powershellProcessBuilder.redirectErrorStream(true); // Directs stderr into stdout
                     powershellProcess = powershellProcessBuilder.start();
 
-
-
                     BufferedReader reader = new BufferedReader(new InputStreamReader(powershellProcess.getInputStream()));
                     String line;
 
@@ -130,9 +130,10 @@ public abstract class MediaMetadata {
                         while ((line = reader.readLine()) != null && powershellRunning) {
 
                             //Checks if media is being played
-                            mediaBeingPlayed = !line.equals(noMediaBeingPlayedMessage);
+                            mediaBeingPlayed = !line.equals(noMediaBeingPlayedMessageWindows);
 
-                            System.out.println("[OS Stream] " + line);
+                            // For debugging only
+//                            System.out.println("[OS Stream] " + line);
 
                             mediaMetaData = line;
 
@@ -157,6 +158,73 @@ public abstract class MediaMetadata {
             System.err.println("startMediaMonitoring was called but a PowerShell process is already running");
 
         }
+
+    }
+
+    public static final String noMediaBeingPlayedMessageLinux = "No player could handle this command";
+
+    public static void startMediaMentoringForLinux(){
+
+        //To stop the loop when the game stops
+        AtomicBoolean clientRunning = new AtomicBoolean(true);
+        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> clientRunning.set(false));
+
+        new Thread(() -> {
+
+            while (clientRunning.get()){
+
+                try {
+
+                    String line = getNowPlayingLinux();
+
+                    //Checks if media is being played
+                    if (!line.equals(noMediaBeingPlayedMessageLinux)){
+
+                        mediaBeingPlayed = true;
+
+                    }
+                    else {
+
+                        mediaBeingPlayed = false;
+                        line = noMediaBeingPlayedMessageWindows;
+
+                    }
+
+                    // For debugging only
+//                    System.out.println("[OS Stream] " + line);
+                    mediaMetaData = line;
+
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+
+                }
+
+                try {
+                    Thread.sleep(800);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }).start();
+
+    }
+
+    private static String getNowPlayingLinux() throws IOException {
+
+        ProcessBuilder playerctlProcessBuilder = new ProcessBuilder("/usr/bin/playerctl",
+                "metadata",
+                "--format",
+                "{{ title }} - {{ artist }}");
+        playerctlProcessBuilder.redirectErrorStream(true);
+
+        Process playerctlProcess = playerctlProcessBuilder.start();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(playerctlProcess.getInputStream()));
+
+        return reader.readLine();
 
     }
 

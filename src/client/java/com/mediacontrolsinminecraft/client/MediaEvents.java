@@ -1,6 +1,5 @@
 package com.mediacontrolsinminecraft.client;
 
-import com.mediacontrolsinminecraft.client.config.ConfigVariables;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
@@ -48,7 +47,7 @@ public class MediaEvents {
     //Media start
     public static void mediaStartListener(){
 
-        if (lastMediaMetadata.equals(MediaMetadata.noMediaBeingPlayedMessage) && !MediaMetadata.mediaMetaData.equals(MediaMetadata.noMediaBeingPlayedMessage)){
+        if (lastMediaMetadata.equals(MediaMetadata.noMediaBeingPlayedMessageWindows) && !MediaMetadata.mediaMetaData.equals(MediaMetadata.noMediaBeingPlayedMessageWindows)){
 
             onMediaStart();
 
@@ -78,7 +77,7 @@ public class MediaEvents {
     //Media End
     public static void mediaEndListener(){
 
-        if (!lastMediaMetadata.equals(MediaMetadata.noMediaBeingPlayedMessage) && MediaMetadata.mediaMetaData.equals(MediaMetadata.noMediaBeingPlayedMessage)){
+        if (!lastMediaMetadata.equals(MediaMetadata.noMediaBeingPlayedMessageWindows) && MediaMetadata.mediaMetaData.equals(MediaMetadata.noMediaBeingPlayedMessageWindows)){
 
             onMediaEnd();
 

@@ -4,6 +4,8 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinUser;
 
+import java.io.IOException;
+
 public abstract class KeyPreses {
 
     // Native Windows Virtual-Key Constants
@@ -12,6 +14,21 @@ public abstract class KeyPreses {
     public static final byte VK_MEDIA_PREV_TRACK = (byte) 0xB1;
 
     public static void sendKeyPress(byte vKey) {
+
+        if (MediaControlsInMinecraftClient.isWindows()){
+
+            sendKeyPressWindows(vKey);
+
+        } else if (MediaControlsInMinecraftClient.isLinux()) {
+
+            sendKeyPressLinux(vKey);
+
+        }
+
+    }
+
+    private static void sendKeyPressWindows(byte vKey){
+
         // 1. Create an array of 2 inputs: one for Key Down, one for Key Up
         WinUser.INPUT[] inputs = (WinUser.INPUT[]) new WinUser.INPUT().toArray(2);
 
@@ -40,8 +57,26 @@ public abstract class KeyPreses {
 
         if (result.intValue() == 0) {
             System.err.println("Failed to send key input. Blocked by UIPI or permissions.");
-        } else {
-            System.out.println("Media event injected successfully!");
+        }
+
+    }
+
+    private static void sendKeyPressLinux(byte vKey){
+
+        String command = "";
+
+        switch (vKey){
+
+            case VK_MEDIA_PLAY_PAUSE -> command = "play-pause";
+            case VK_MEDIA_NEXT_TRACK -> command = "next";
+            case VK_MEDIA_PREV_TRACK -> command = "previous";
+
+        }
+
+        try {
+            new ProcessBuilder("/usr/bin/playerctl", command).start();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }

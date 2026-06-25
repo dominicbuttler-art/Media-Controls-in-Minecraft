@@ -14,7 +14,7 @@ Allows you to control where the interface is using ModMenu.
 
 ### Other features
 - Can mute in game music when media is playing
-- Works without any additional set up
+- Works without any additional set up, on Windows
 - Will also work with YouTube videos allowing you to play and pause the video from the main interface
 ## This mod will work with most modern media player apps
 ### Verified apps that this mod will work with
@@ -24,5 +24,6 @@ Allows you to control where the interface is using ModMenu.
 - Amazon Music
 - Apple Music
 - Google Chrome
-## As of right now this mod WILL ONLY WORK ON WINDOWS DEVICES. Will not work on Linux and macOS
-Planning to add Linux support in the future
+## Disclaimers
+- Will not work on macOS
+- People using Linux might have to do some additional set up for this mod to work, go [here](https://github.com/dominicbuttler-art/Media-Controls-in-Minecraft/wiki/Getting-this-mod-to-work-on-Linux#getting-this-mod-to-work-on-linux) for more information.
